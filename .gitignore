@@ -1,0 +1,3 @@
+positive/
+negative/
+resnet34_peoplenet_pruned.etlt_b1_gpu0_fp32.engine
