@@ -1,5 +1,5 @@
 # deepstream-save-images
-Deepstream python apps with rtsp, usb and mipi source. Saves images when an object with unique tracking id is present in ROI.
+Deepstream python apps with rtsp, usb and mipi source. Saves images when an object with unique tracking id is present in ROI. If you want to disable ROI then put roi-RF=0;0;0;480;640;480;640;0 in config_nvanalytics.txt for processing size of (640,480)
 
 This app is enabled for 2 streams for rtsp and video. so make necessary changes in the config files. Add proper sources in the source.json for the same.
 
