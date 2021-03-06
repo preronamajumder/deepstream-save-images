@@ -36,24 +36,32 @@ osd-mode=2
 display-font-size=12
 
 ## Per stream configuration
-[roi-filtering-stream-all]
+[roi-filtering-stream-0]
 #enable or disable following feature
 enable=1
 #ROI to filter select objects, and remove from meta data
-roi-RF=200;0;200;480;440;480;440;0
+roi-RF=150;0;150;480;490;480;490;0
 #remove objects in the ROI
 inverse-roi=0
 class-id=-1
 
+[roi-filtering-stream-1]
+#enable or disable following feature
+enable=1
+#ROI to filter select objects, and remove from meta data
+roi-RF=150;0;150;480;490;480;490;0
+#remove objects in the ROI
+inverse-roi=0
+class-id=-1
 
-[overcrowding-stream-all]
+[overcrowding-stream-0]
 enable=0
-roi-OC=0;0;0;480;200;480;200;0
+roi-OC=150;0;150;480;490;480;490;0
 #no of objects that will trigger OC
 object-threshold=5
 class-id=-1
 
-[line-crossing-stream-all]
+[line-crossing-stream-0]
 enable=0
 #Label;direction;lc
 #line-crossing-Entry=1072;911;1143;1058;944;1020;1297;1020;
@@ -69,7 +77,7 @@ extended=0
 mode=loose
 
 
-[direction-detection-stream-all]
+[direction-detection-stream-0]
 enable=0
 #Label;direction;
 direction-South=284;840;360;662;
