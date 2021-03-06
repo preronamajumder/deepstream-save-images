@@ -48,7 +48,6 @@ import json
 import time
 from queue import Queue
 
-#{"0": "rtsp://admin:123456@202.179.72.236:8091/H264?ch=1&subtype=0&proto=Onvif"}
 fps_streams={}
 
 MAX_DISPLAY_LEN=64
@@ -71,6 +70,8 @@ if not os.path.exists(path2):
     os.mkdir(path2)
 
 number_sources = 1
+for i in range(number_sources):
+    fps_streams["stream{0}".format(i)]=GETFPS(i)
 if not os.path.exists(os.path.join(os.path.join(path1,"stream_0"))):
     os.mkdir(os.path.join(os.path.join(path1,"stream_0")))
 if not os.path.exists(os.path.join(os.path.join(path2,"stream_0"))):
@@ -182,7 +183,7 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
                     print(e)
 
         # Get frame rate through this probe
-        # fps_streams["stream{0}".format(frame_meta.pad_index)].get_fps()
+        fps_streams["stream{0}".format(frame_meta.pad_index)].get_fps()
         # print(list(id_list.queue))
         
         try:

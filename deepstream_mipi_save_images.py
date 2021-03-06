@@ -69,6 +69,8 @@ if not os.path.exists(path2):
     os.mkdir(path2)
 
 number_sources = 1
+for i in range(number_sources):
+    fps_streams["stream{0}".format(i)]=GETFPS(i)
 if not os.path.exists(os.path.join(os.path.join(path1,"stream_0"))):
     os.mkdir(os.path.join(os.path.join(path1,"stream_0")))
 if not os.path.exists(os.path.join(os.path.join(path2,"stream_0"))):
@@ -182,7 +184,7 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
 
         # Get frame rate through this probe
         fps_streams["stream{0}".format(frame_meta.pad_index)].get_fps()
-        print(list(id_list.queue))
+        # print(list(id_list.queue))
         
         try:
             l_frame=l_frame.next
