@@ -151,7 +151,7 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
                                     h = obj_meta.rect_params.height
 
                                     frame = get_frame(gst_buffer, frame_meta.batch_id)
-                                    name= "img_"+datetime.datetime.now().strftime("%Y%m%d_%H%M%S")+".jpg"
+                                    name= "img_"+datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")+".jpg"
                                     cv2.imwrite(os.path.join(os.path.join(path1,"stream_"+str(frame_meta.pad_index)), name), frame)
                                 except cv2.error as e:
                                     print(e)
