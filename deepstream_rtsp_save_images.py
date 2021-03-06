@@ -70,6 +70,7 @@ if not os.path.exists(path2):
     os.mkdir(path2)
 
 number_sources = 0
+
 # tiler_sink_pad_buffer_probe  will extract metadata received on OSD sink pad
 # and update params for drawing rectangle, object information etc.
 def tiler_src_pad_buffer_probe(pad,info,u_data):
@@ -129,7 +130,7 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
                     if user_meta.base_meta.meta_type == pyds.nvds_get_user_meta_type("NVIDIA.DSANALYTICSOBJ.USER_META"):             
                         user_meta_data = pyds.NvDsAnalyticsObjInfo.cast(user_meta.user_meta_data)
                         # print("Object {0} line crossing status: {1}".format(obj_meta.object_id, user_meta_data.lcStatus))
-                        print("Object {0} roi status: {1}".format(obj_meta.object_id, user_meta_data.roiStatus))
+                        # print("Object {0} roi status: {1}".format(obj_meta.object_id, user_meta_data.roiStatus))
                         # if user_meta_data.dirStatus: print("Object {0} moving in direction: {1}".format(obj_meta.object_id, user_meta_data.dirStatus))                    
                         # if user_meta_data.lcStatus: print("Object {0} line crossing status: {1}".format(obj_meta.object_id, user_meta_data.lcStatus))
                         # if user_meta_data.ocStatus: print("Object {0} overcrowding status: {1}".format(obj_meta.object_id, user_meta_data.ocStatus))
@@ -148,7 +149,7 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
                                     h = obj_meta.rect_params.height
 
                                     frame = get_frame(gst_buffer, frame_meta.batch_id)
-                                    name= "img_"+datetime.datetime.now().strftime("%Y%m%d_%H%M%S")+".jpg"
+                                    name= "img_"+datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")+".jpg"
                                     cv2.imwrite(os.path.join(os.path.join(path1,"stream_"+str(frame_meta.pad_index)), name), frame)
                                 except cv2.error as e:
                                     print(e)
@@ -179,7 +180,7 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
 
         # Get frame rate through this probe
         fps_streams["stream{0}".format(frame_meta.pad_index)].get_fps()
-        print(list(id_list.queue))
+        # print(list(id_list.queue))
         
         try:
             l_frame=l_frame.next
