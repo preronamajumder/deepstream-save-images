@@ -103,7 +103,7 @@ try:
         sys.exit(1)
     queue_size = config["queue_size"]
     if not isinstance(queue_size, int):
-        print("wrong value for 'queue_size' in json file")
+        print("wrong value for 'queue_size' in json file. Should be integer and greater than 0. e.g. 20")
         sys.exit(1)
     else:
         if queue_size == 0:
