@@ -73,15 +73,39 @@ try:
         print(config)    
 
     sources = config["source"]
-    display = config["display"]
-    MUXER_OUTPUT_WIDTH = config["processing_width"]
-    MUXER_OUTPUT_HEIGHT = config["processing_height"]
-    image_timer = config["image_timer"]
-    queue_size = config["queue_size"]
-
-    if len(list(config)) == 0:
-        print("No configurations provided in json file")
+    if len(list(sources)) == 0:
+        print("No source provided in json file")
         sys.exit(1)
+    for key, value in sources.items():
+        if value == "":
+            print("No source provided in json file")
+            sys.exit(1)
+    display = config["display"]
+    if not isinstance(display, bool):
+        print("wrong value for 'display' in json file. Valid usage is 'display': true or 'display': false")
+        sys.exit(1)
+    MUXER_OUTPUT_WIDTH = config["processing_width"]
+    if not isinstance(MUXER_OUTPUT_WIDTH, int):
+        print("wrong value for 'processing_width' in json file. Should be integer. eg. 640")
+        sys.exit(1)
+    MUXER_OUTPUT_HEIGHT = config["processing_height"]
+    if not isinstance(MUXER_OUTPUT_HEIGHT, int):
+        print("wrong value for 'processing_height' in json file. Should be integer. eg. 480")
+        sys.exit(1)
+    image_timer = config["image_timer"]
+    if not isinstance(image_timer, int):
+        print("wrong value for 'image_timer' in json file. Should be integer. eg. 600")
+        sys.exit(1)
+    queue_size = config["queue_size"]
+    if not isinstance(queue_size, int):
+        print("wrong value for 'queue_size' in json file")
+        sys.exit(1)
+    else:
+        if queue_size == 0:
+            print("'queue_size' cannot be 0. Switching to default value 20.")
+            queue_size = 20
+            time.sleep(5)
+
 except Exception as e:
     print(e)
     print("Error in json file")

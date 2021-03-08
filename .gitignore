@@ -1,4 +1,5 @@
 negative/
 positive/
 config_og.json
+config_git.json
 resnet34_peoplenet_pruned.etlt_b2_gpu0_fp32.engine
