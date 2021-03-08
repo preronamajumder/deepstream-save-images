@@ -82,20 +82,20 @@ try:
         print("wrong value for 'display' in json file. Valid usage is 'display': true or 'display': false")
         sys.exit(1)
     MUXER_OUTPUT_WIDTH = config["processing_width"]
-    if not isinstance(MUXER_OUTPUT_WIDTH, int):
+    if type(MUXER_OUTPUT_WIDTH)!=type(1):
         print("wrong value for 'processing_width' in json file. Should be integer. eg. 640")
         sys.exit(1)
     MUXER_OUTPUT_HEIGHT = config["processing_height"]
-    if not isinstance(MUXER_OUTPUT_HEIGHT, int):
+    if type(MUXER_OUTPUT_HEIGHT) != type(1):
         print("wrong value for 'processing_height' in json file. Should be integer. eg. 480")
         sys.exit(1)
     image_timer = config["image_timer"]
-    if not isinstance(image_timer, int):
+    if type(image_timer) != type(1):
         print("wrong value for 'image_timer' in json file. Should be integer. eg. 600")
         sys.exit(1)
     queue_size = config["queue_size"]
-    if not isinstance(queue_size, int):
-        print("wrong value for 'queue_size' in json file")
+    if type(queue_size) != type(1):
+        print("wrong value for 'queue_size' in json file. Should be integer and greater than 0. e.g. 20")
         sys.exit(1)
     else:
         if queue_size == 0:
