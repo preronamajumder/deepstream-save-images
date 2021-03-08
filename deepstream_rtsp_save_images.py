@@ -72,6 +72,10 @@ try:
         config = json.load(f)
         print(config)    
 
+    if len(list(config)) == 0:
+        print("No configurations provided in json file")
+        sys.exit(1)
+
     sources = config["source"]
     if len(list(sources)) == 0:
         print("No source provided in json file")
@@ -80,6 +84,7 @@ try:
         if value == "":
             print("No source provided in json file")
             sys.exit(1)
+
     display = config["display"]
     if not isinstance(display, bool):
         print("wrong value for 'display' in json file. Valid usage is 'display': true or 'display': false")
