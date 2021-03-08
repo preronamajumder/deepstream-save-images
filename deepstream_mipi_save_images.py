@@ -48,19 +48,18 @@ import json
 import time
 from queue import Queue
 
-fps_streams={}
 
-MAX_DISPLAY_LEN=64
-MUXER_OUTPUT_WIDTH=640
-MUXER_OUTPUT_HEIGHT=480
 MUXER_BATCH_TIMEOUT_USEC=4000000
-TILED_OUTPUT_WIDTH=640
+TILED_OUTPUT_WIDTH=640*2
 TILED_OUTPUT_HEIGHT=480
 GST_CAPS_FEATURES_NVMM="memory:NVMM"
 OSD_PROCESS_MODE= 0
 OSD_DISPLAY_TEXT= 0
+
+#start timer
 init = time.time()
-id_list = Queue(maxsize=20)
+
+#create image directories
 path1 = "positive"
 path2 =  "negative"
 if not os.path.exists(path1):
@@ -68,19 +67,44 @@ if not os.path.exists(path1):
 if not os.path.exists(path2):
     os.mkdir(path2)
 
-number_sources = 1
+#read config
+try:
+    with open("config.json", "r") as f:
+        config = json.load(f)
+        print(config)    
+
+    sources = config["source"]
+    display = config["display"]
+    MUXER_OUTPUT_WIDTH = config["processing_width"]
+    MUXER_OUTPUT_HEIGHT = config["processing_height"]
+    image_timer = config["image_timer"]
+    queue_size = config["queue_size"]
+
+    if len(list(config)) == 0:
+        print("No configurations provided in json file")
+        sys.exit(1)
+except Exception as e:
+    print(e)
+    print("Error in json file")
+    sys.exit(1)
+
+number_sources = len(list(sources))
+id_dict = {}
+fps_streams={}
 for i in range(number_sources):
+    #initialise id dictionary to keep track of object_id streamwise
+    id_dict[i] = Queue(maxsize=queue_size)
     fps_streams["stream{0}".format(i)]=GETFPS(i)
-if not os.path.exists(os.path.join(os.path.join(path1,"stream_0"))):
-    os.mkdir(os.path.join(os.path.join(path1,"stream_0")))
-if not os.path.exists(os.path.join(os.path.join(path2,"stream_0"))):
-    os.mkdir(os.path.join(os.path.join(path2,"stream_0")))
+    #create image directories for separate streams
+    if not os.path.exists(os.path.join(path1,"stream_"+str(i))):
+        os.mkdir(os.path.join(path1,"stream_"+str(i)))
+    if not os.path.exists(os.path.join(path2,"stream_"+str(i))):
+        os.mkdir(os.path.join(path2,"stream_"+str(i)))
 
 # tiler_sink_pad_buffer_probe  will extract metadata received on OSD sink pad
 # and update params for drawing rectangle, object information etc.
 def tiler_src_pad_buffer_probe(pad,info,u_data):
 
-    global id_list
     global init
 
     frame_number=0
@@ -117,8 +141,6 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
         frame_number=frame_meta.frame_num
         l_obj=frame_meta.obj_meta_list
         num_rects = frame_meta.num_obj_meta
-        
-        # print("Num object meta ", frame_meta.num_obj_meta)
 
         while l_obj is not None:
             try: 
@@ -141,17 +163,12 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
                         # if user_meta_data.roiStatus: print("Object {0} roi status: {1}".format(obj_meta.object_id, user_meta_data.roiStatus))
                 
                         if user_meta_data.roiStatus:
-                            if long_to_int(obj_meta.object_id) not in list(id_list.queue):
-                                if id_list.full():
-                                    id_list.get()
-                                id_list.put(long_to_int(obj_meta.object_id))
+                            if obj_meta.object_id not in list(id_dict[frame_meta.pad_index].queue):
+                                if id_dict[frame_meta.pad_index].full():
+                                    id_dict[frame_meta.pad_index].get()
+                                id_dict[frame_meta.pad_index].put(obj_meta.object_id)
                                 #write image when object detected in "positive" folder
                                 try:
-                                    x = obj_meta.rect_params.left
-                                    y = obj_meta.rect_params.top
-                                    w = obj_meta.rect_params.width
-                                    h = obj_meta.rect_params.height
-
                                     frame = get_frame(gst_buffer, frame_meta.batch_id)
                                     name= "img_"+datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")+".jpg"
                                     cv2.imwrite(os.path.join(os.path.join(path1,"stream_"+str(frame_meta.pad_index)), name), frame)
@@ -171,8 +188,8 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
             except StopIteration:
                 break            
         
-        #write image every 10 secs if object not detected in "negative" folder
-        if time.time() - init > 10:
+        #write image every n secs if object not detected in "negative" folder
+        if time.time() - init > image_timer:
             if frame_meta.num_obj_meta==0:
                 try:
                     frame = get_frame(gst_buffer, frame_meta.batch_id)
@@ -184,7 +201,7 @@ def tiler_src_pad_buffer_probe(pad,info,u_data):
 
         # Get frame rate through this probe
         fps_streams["stream{0}".format(frame_meta.pad_index)].get_fps()
-        # print(list(id_list.queue))
+        # print([list(id_dict[x].queue) for x in list(id_dict)])
         
         try:
             l_frame=l_frame.next
@@ -287,10 +304,16 @@ def main(args):
         if not transform:
             sys.stderr.write(" Unable to create transform \n")
 
-    print("Creating EGLSink \n")
-    sink = Gst.ElementFactory.make("nveglglessink", "nvvideo-renderer")
-    if not sink:
-        sys.stderr.write(" Unable to create egl sink \n")
+    if display:
+        print("Creating EGLSink \n")
+        sink = Gst.ElementFactory.make("nveglglessink", "nvvideo-renderer")
+        if not sink:
+            sys.stderr.write(" Unable to create egl sink \n")
+    else:
+        print("Creating FakeSink \n")
+        sink = Gst.ElementFactory.make("fakesink", "fakesink")
+        if not sink:
+            sys.stderr.write(" Unable to create fake sink \n")
 
     queue1=Gst.ElementFactory.make("queue","queue1")
     queue2=Gst.ElementFactory.make("queue","queue2")
@@ -419,7 +442,7 @@ def main(args):
     queue7.link(nvvidconv)
     nvvidconv.link(queue8)
     queue8.link(nvosd)
-    if is_aarch64():
+    if is_aarch64() and display:
         nvosd.link(queue9)
         queue9.link(transform)
         transform.link(sink)

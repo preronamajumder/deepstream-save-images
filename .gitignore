@@ -1,4 +1,3 @@
-positive/
 negative/
-resnet34_peoplenet_pruned.etlt_b1_gpu0_fp32.engine
-resnet34_peoplenet_pruned.etlt_b2_gpu0_fp32.engine
+positive/
+config_og.json

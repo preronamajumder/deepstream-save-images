@@ -1,8 +1,0 @@
-// for video 
-// {"0": "file:///home/user/video.mp4",
-//     "1": "file:///home/user/video.mp4"}
-// for rtsp
-// {"0": "rtsp://username:password@....",
-//     "1": "rtsp://username:password@...."}
-{"0": "",
-"1": ""}

@@ -1,0 +1,3 @@
+//for video: {"stream_0": "file:///home/user/video.mp4"}
+//for rtsp: {"stream_0": "rtsp://username:password@....."}
+{"source": {"stream_0": "", "stream_1": ""}, "display": true, "processing_width": 640, "processing_height": 480, "image_timer": 10, "queue_size": 20}
