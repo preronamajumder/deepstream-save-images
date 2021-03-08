@@ -73,7 +73,6 @@ try:
         config = json.load(f)
         print(config)    
 
-    sources = config["source"]
     display = config["display"]
     MUXER_OUTPUT_WIDTH = config["processing_width"]
     MUXER_OUTPUT_HEIGHT = config["processing_height"]
@@ -88,7 +87,7 @@ except Exception as e:
     print("Error in json file")
     sys.exit(1)
 
-number_sources = len(list(sources))
+number_sources = 1
 id_dict = {}
 fps_streams={}
 for i in range(number_sources):
